@@ -1,50 +1,48 @@
 import math
-from itertools import permutations, izip
-import sys
+from collections import Counter
+from itertools import count
 
-primes = [2, 3, 5, 7, 9, 11, 13, 17, 23, 29, 31, 37, 41, 43, 47, 53, 59]
+def is_prime(num):
+    if num % 2 == 0:
+        return False
+    max = int(math.sqrt(num))+1
+    for i in xrange(3,max,2):
+        if num % i == 0:
+            return False
+    return True
 
-def is_triangle(num):
-    n = (math.sqrt(8*num + 1) - 1)/2
-    if n == int(n):
-        print int(n)
-    return n == int(n)
+def gen_primes():
+    yield 2
+    for i in count(3,2):
+        if is_prime(i):
+            yield i
 
-#while True:
-#    line = sys.stdin.readline().strip()
-#    print is_triangle(int(line))
-ans = set()
-#for i in permutations(primes, 5):
-#    product = 1
-#    for p, exp in izip(i, l):
-#        product *= math.pow(p,exp)
-#    if is_triangle(product):
-#        print i, product, is_triangle(product)
-#        ans.add(product)
+def get_factors(num):
+    max = num / 2 + 1
+    if is_prime(num):
+        return [num]
+    factors = []
+    for p in gen_primes():
+        if p > max:
+            break
+        while num % p == 0:
+            factors.append(p)
+            num /= p
 
-def search(l):
-    for i in permutations(primes, len(l)):
-        product = 1
-        for p, exp in izip(i, l):
-            product *= math.pow(p,exp)
-        if is_triangle(product):
-            print i, product, is_triangle(product)
-            ans.add(product)
+    return factors
 
-#l = [1, 1, 4, 4, 4]
-#l = [3, 4, 4, 4]
-#search(l)
+def get_num_divisors(factors):
+    result = 1
+    for key, value in Counter(factors).items():
+        result *= value +1
+    return result
 
-l = [1, 1, 1, 2, 2, 6]
-search(l)
-l = [3, 1, 2, 2, 6]
-search(l)
-l = [3, 5, 2, 6]
-search(l)
-
-
-
-#l = [1, 10, 22]
-#search(l)
-
-print min(ans)
+f_old = [3]
+for i in count(3):
+    f = get_factors(i+1)
+    factors = sorted(f_old + f)[1:]
+    divisors = get_num_divisors(factors)
+    if divisors > 500:
+        print i, i*(i+1)/2, factors, divisors
+        break
+    f_old = f
