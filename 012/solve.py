@@ -1,28 +1,27 @@
-import math
-from itertools import izip, count, product
+from itertools import count
+from itertools import izip
 
-def is_prime_num(num):
-    max = int(math.sqrt(num))
-    for i in xrange(3, max+1, 2):
+def get_factors(num):
+    for i in range(2, num/2 + 1):
         if num % i == 0:
-            return False
-    return True
-
-def get_primes():
-    yield 2
-    for i in xrange(3, 2000000, 2):
-        if is_prime_num(i):
             yield i
 
+def get_num_factors(num):
+    result = 2
+    for i in range(2, num/2 + 1):
+        if num % i == 0:
+            result += 1
+    return result
 
-primes = []
-for i, p in izip(count(1), get_primes()):
-    primes.append(p)
-    if i == 5:
-        break
+def gen_triangle():
+    sum = 0
+    for i in count(1):
+        sum += i
+        yield sum
 
-print primes
-print len(primes)
-for i in product(primes, repeat=5):
-    p = reduce(lambda a,b:a*b, i)
-    print p
+print list(get_factors(500))
+#for i, triangle in izip(count(), gen_triangle()):
+#    num_factors = get_num_factors(triangle)
+#    if num_factors > 500:
+#        print i , triangle, num_factors
+#        break
